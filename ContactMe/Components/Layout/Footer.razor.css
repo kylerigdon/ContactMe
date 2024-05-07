@@ -1,0 +1,16 @@
+﻿.footer {
+    background-color: var(--kr-theme-900);
+}
+
+.footer a {
+    color: var(--kr-theme-200);
+}
+
+.footer a:hover {
+    color: var(--kr-theme-core);
+}
+
+.footer .bi {
+    font-size: 1.5rem;
+    padding-inline-start: .5rem;
+}

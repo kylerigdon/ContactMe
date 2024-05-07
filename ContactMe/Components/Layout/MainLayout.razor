@@ -1,0 +1,23 @@
+﻿@inherits LayoutComponentBase
+
+<div class="d-flex h-100 flex-column">
+    <header class="flex-shrink-0">
+        <NavMenu />
+    </header>
+
+    <main class="container-xxl felx-grow-1 py-2">
+        @Body
+    </main>
+
+    <footer class="flex-shrink-0">
+        <Footer />
+    </footer>
+
+    @* DO NOT DELETE *@
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+</div>
+

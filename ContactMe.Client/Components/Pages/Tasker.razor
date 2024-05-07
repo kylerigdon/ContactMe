@@ -1,0 +1,130 @@
+﻿@page "/tasker"
+
+@using System.Text.Json
+@using ContactMe.Client.Components.UI
+@using ContactMe.Client.Helpers
+@using ContactMe.Client.Models
+@using ContactMe.Client.Services.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using ContactMe.Client.Services
+
+@attribute [Authorize]
+@rendermode InteractiveAuto
+
+@inject ITaskerItemService _ITaskerItemService
+
+<div class="d-flex justify-content-center align-items-center">
+    <div class="task p-5">
+        <div class="p-2 text-center mb-3">
+            <img src="/img/Tasker_600.png" width="300px" />
+        </div>
+        <div>
+            <EditForm Model="formTaskerItem" OnSubmit="AddTaskerItem">
+                <div class="hstack gap-2">
+                    <InputText class="form-control" placeholder="Enter a Task" @bind-Value="@formTaskerItem.Name" @ref="formInput"></InputText>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </EditForm>
+        </div>
+        <hr />
+        <div class="text-danger text-center">
+            @errorMessage
+        </div>
+        <div class="vstack gap-3">
+            @foreach (TaskerItemDTO item in taskerItems)
+            {
+                <TaskerLine Todo="item" OnDelete="DeleteTaskerItem" OnUpdate="UpdateTaskerItem" />
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private InputText? formInput;
+
+    private TaskerItemDTO formTaskerItem = new TaskerItemDTO();
+    private List<TaskerItemDTO> taskerItems = new List<TaskerItemDTO>();
+    private UserInfo? userInfo;
+    string errorMessage = string.Empty;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+            taskerItems = (await _ITaskerItemService.GetTaskerItemsAsync(userInfo!.UserId)).ToList();
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Could not load your Tasker Items. Please try again later.";
+        }
+    }
+
+    private async Task AddTaskerItem()
+    {
+        try
+        {
+
+            await _ITaskerItemService.CreateTaskerItemAsync(formTaskerItem, userInfo!.UserId);
+            
+            errorMessage = string.Empty;
+            formTaskerItem = new TaskerItemDTO();
+
+            taskerItems = (await _ITaskerItemService.GetTaskerItemsAsync(userInfo!.UserId)).ToList();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Failed to add a new Tasker Item!";
+        }
+
+        // put the text cursor back on the input box
+        if (formInput?.Element is not null)
+        {
+            await formInput.Element.Value.FocusAsync();
+        }
+    }
+
+    private async Task DeleteTaskerItem(TaskerItemDTO taskerItem)
+    {
+        try
+        {
+            // delete the item from the DB
+             await _ITaskerItemService.DeleteTaskerItemAsync(taskerItem.Id, userInfo!.UserId);
+            // get the latest data from the DB to update the page
+             taskerItems = (await _ITaskerItemService.GetTaskerItemsAsync(userInfo!.UserId)).ToList();
+
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Failed to delete the selected Tasker Item!";
+        }
+    }
+
+    private async Task UpdateTaskerItem(TaskerItemDTO updatedItem)
+    {
+        try
+        {
+            await _ITaskerItemService.UpdateTaskerItemAsync(updatedItem.Id, updatedItem, userInfo!.UserId);
+            taskerItems = (await _ITaskerItemService.GetTaskerItemsAsync(userInfo!.UserId)).ToList();
+
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Failed to update the selected Tasker Item!";
+        }
+    }
+}
+
