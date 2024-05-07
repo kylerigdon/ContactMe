@@ -1,7 +1,8 @@
-﻿<nav class="navbar navmenu navbar-expand-md" data-bs-theme="dark">
+﻿@using ContactMe.Client.Helpers
+<nav class="navbar navmenu navbar-expand-md" data-bs-theme="dark">
     <div class="container-xxl">
         <a href="/" class="navbar-brand me-3">
-            <img src="images/RobotWhite logo - no background.svg" height="40" />    
+            <img src="images/RobotWhite logo - no background.svg" height="40" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
@@ -14,24 +15,67 @@
                         <span>Home</span>
                     </NavLink>
                 </li>
+
+                <AuthorizeView>
+                    <li class="nav-item">
+                        <NavLink href="contacts" class="nav-link" Match="NavLinkMatch.Prefix">
+                            <i class="bi bi-people"></i>
+                            <span>Contacts</span>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink href="categories" class="nav-link" Match="NavLinkMatch.Prefix">
+                            <i class="bi bi-tags"></i>
+                            <span>Categories</span>
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-md-0">
                 <li class="nav-item dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="Account" data-bs-toggle="dropdown">
+                    <NavLink Match="NavLinkMatch.Prefix" class="nav-link dropdown-toggle" href="Account" data-bs-toggle="dropdown">
                         <i class="bi bi-stack"></i>
                         <span>Account</span>
                     </NavLink>
                     <ul class="dropdown-menu dropdown-menu-end text-nowrap px-2 m-2">
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="Account/Register">
-                                <i class="bi bi-person"></i>
-                                <span>Register</span>
-                            </NavLink>
-                            <NavLink class="nav-link" href="Account/Login">
-                                <i class="bi bi-person-badge"></i>
-                                <span>Login</span>
-                            </NavLink>
-                        </li>
+                        <AuthorizeView>
+                            <Authorized>
+                                @{
+                                    UserInfo? userInfo = UserInfoHelper.GetUserInfo(context);
+                                }
+                                
+                                <li class="nav-item">
+                                    <NavLink class="nav-link" href="Account/Manage">
+                                        <img class="profile-picture" src="@userInfo?.ProfilePictureUrl" />
+                                        <span>@userInfo?.FullName</span>
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item">
+                                    <form action="Account/Logout" method="post">
+                                        <AntiforgeryToken />
+                                        <input type="hidden" name="ReturnUrl" value="" />
+                                        <button type="submit" class="nav-link">
+                                            <i class="bi bi-arrow-bar-left"></i>
+                                            Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </Authorized>
+                            <NotAuthorized>
+                                <li class="nav-item">
+                                    <NavLink class="nav-link" href="Account/Register">
+                                        <i class="bi bi-person"></i>
+                                        <span>Register</span>
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item">
+                                    <NavLink class="nav-link" href="Account/Login">
+                                        <i class="bi bi-person-badge"></i>
+                                        <span>Login</span>
+                                    </NavLink>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </ul>
                 </li>
             </ul>

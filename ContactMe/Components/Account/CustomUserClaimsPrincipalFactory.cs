@@ -15,7 +15,7 @@ namespace ContactMe.Components.Account
         {
             ClaimsIdentity identity = await base.GenerateClaimsAsync(user);
 
-            string profilePictureUrl = user.ImageId.HasValue ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture;
+            string profilePictureUrl = user.ImageId.HasValue ? $"/api/uploads/{user.ImageId}" : UploadHelper.DefaultProfilePicture;
 
             List<Claim> customClaims = [
                 new Claim(nameof(UserInfo.FirstName), user.FirstName!),

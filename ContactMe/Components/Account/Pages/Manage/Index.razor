@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-md-6 order-first order-md-last">
-                <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture)" class="img-fluid p-5 pt-0 rounded-3" id="imagePreview" />
+                <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : UploadHelper.DefaultProfilePicture)" class="img-fluid p-5 pt-0 rounded-3" id="imagePreview" />
 
                 <label class="form-label" for="image">Profile Picture</label>
                 <input type="file" class="form-control" accept=".jpg,.jpeg,.png,.svg,.gif" name="Input.ProfilePicture" onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" />
@@ -81,7 +81,7 @@
 
             try
             {
-                ImageUpload newImage = await ImageHelper.GetImageUploadAsync(Input.ProfilePicture);
+                ImageUpload newImage = await UploadHelper.GetImageUploadAsync(Input.ProfilePicture);
                 await DBContext.AddAsync(newImage);
 
                 ImageUpload? oldImage = await DBContext.Images.FirstOrDefaultAsync(i => i.Id == user.ImageId);

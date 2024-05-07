@@ -1,0 +1,77 @@
+﻿@page "/categories"
+@using ContactMe.Client.Helpers
+@using ContactMe.Client.Services.Interfaces
+
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject ICategoryDTOService CategoryService
+
+<PageTitle>ContactMe | Categories</PageTitle>
+
+<div class="container">
+    <EditForm Model="formCategory" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <ul class="list-group my-3">
+            <li class="list-group-item">
+                <label class="form-label" for="categoryName">
+                    Add a Category
+                </label>
+                <div class="d-flex gap-3">
+                    <InputText class="form-control" placeholder="Category Name" @bind-Value="formCategory.Name" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-floppy"></i>
+                    </button>
+                </div>
+                <ValidationMessage For="() => formCategory.Name" />
+            </li>
+        </ul>
+    </EditForm>
+
+    <ul>
+        @foreach(CategoryDTO category in categories)
+        {
+            <li>@category.Name</li>
+        }
+    </ul>
+
+</div>
+
+@code {
+    #region component parameters
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+    #region component state
+    private UserInfo? userInfo;
+    private CategoryDTO formCategory = new CategoryDTO();
+    private IEnumerable<CategoryDTO> categories = [];
+    #endregion
+
+    #region component methods
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        categories = (await CategoryService.GetCategoriesAsync(userInfo!.UserId)).ToList();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await CategoryService.CreateCategoryAsync(formCategory, userInfo!.UserId);
+            formCategory = new CategoryDTO();
+
+            categories = (await CategoryService.GetCategoriesAsync(userInfo!.UserId)).ToList();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    #endregion
+}

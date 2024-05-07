@@ -1,10 +1,13 @@
-﻿using ContactMe.Models;
+﻿using ContactMe.Client.Helpers;
+using ContactMe.Models;
 
 namespace ContactMe.Helpers
 {
-    public static class ImageHelper
+    public static class UploadHelper
     {
-        public static readonly string DefaultProfilePicture = "/images/DefaultProfilePicture.svg";
+        public static readonly string DefaultProfilePicture = ImageHelper.DefaultProfilePicture;
+        public static readonly string DefaultContactImage = ImageHelper.DefaultContactImage;
+        public static readonly int MaxFileSize = ImageHelper.MaxFileSize;
 
         public static async Task<ImageUpload> GetImageUploadAsync(IFormFile file)
         {
@@ -13,7 +16,7 @@ namespace ContactMe.Helpers
             await file.CopyToAsync(ms);
             byte[] data = ms.ToArray();
 
-            if (ms.Length > 5 * 1024 * 1024)
+            if (ms.Length > MaxFileSize)
             {
                 throw new IOException("Images must be less than 5MB!");
             }

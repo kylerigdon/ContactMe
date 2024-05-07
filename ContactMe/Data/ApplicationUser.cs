@@ -25,8 +25,9 @@ namespace ContactMe.Data
 
         public virtual ImageUpload? Image { get; set; }
 
-        public virtual ICollection<TaskerItem> TaskerItems { get; set; } = new HashSet<TaskerItem>();
+        public ICollection<Contact> Contacts { get; set; } = new HashSet<Contact>();
 
+        public ICollection<Category> Categories { get; set; } = new HashSet<Category>();
     }
 
 }
