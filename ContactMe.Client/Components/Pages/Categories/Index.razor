@@ -1,4 +1,5 @@
 ﻿@page "/categories"
+@using ContactMe.Client.Components.UI.Categories
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
@@ -28,13 +29,7 @@
         </ul>
     </EditForm>
 
-    <ul>
-        @foreach(CategoryDTO category in categories)
-        {
-            <li>@category.Name</li>
-        }
-    </ul>
-
+    <CategoryAccordion Categories="categories" />
 </div>
 
 @code {
@@ -53,7 +48,7 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-        categories = (await CategoryService.GetCategoriesAsync(userInfo!.UserId)).ToList();
+        categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
     }
 
     private async Task HandleSubmit()
@@ -63,8 +58,39 @@
             await CategoryService.CreateCategoryAsync(formCategory, userInfo!.UserId);
             formCategory = new CategoryDTO();
 
-            categories = (await CategoryService.GetCategoriesAsync(userInfo!.UserId)).ToList();
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            // delete the category
+            await CategoryService.DeleteCategoryAsync(categoryId, userInfo!.UserId);
+
+            // update component state
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task UpdateCategory(CategoryDTO category)
+    {
+        try
+        {
+            await CategoryService.UpdateCategoryAsync(category, userInfo!.UserId);
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
         }
         catch (Exception ex)
         {

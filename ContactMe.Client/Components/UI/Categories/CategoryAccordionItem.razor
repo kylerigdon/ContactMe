@@ -1,0 +1,41 @@
+﻿@if (Category is not null)
+{
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <div class="d-md-flex gap-3 p-3">
+                <div class="flex-grow-1 hstack gap-2 align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                    <span class="badge bg-secondary rounded-pill small">
+                        @Category.Contacts.Count
+                    </span>
+                    <span>
+                        @Category.Name
+                    </span>
+                </div>
+                <div>
+                    @* buttons *@
+                </div>
+            </div>
+        </div>
+        <div id="collapse-@Category.Id" class="accordion-collapse collapse" data-bs-parent="#@AccordionId">
+            <div class="accordion-body">
+                <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    #region parameters
+    [Parameter, EditorRequired]
+    public string? AccordionId { get; set; }
+
+    [Parameter, EditorRequired]
+    public CategoryDTO? Category { get; set; }
+    #endregion
+
+    #region state
+    #endregion
+
+    #region methods
+    #endregion
+}
