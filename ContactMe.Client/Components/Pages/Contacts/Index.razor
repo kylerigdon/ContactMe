@@ -1,6 +1,13 @@
 ﻿@page "/contacts"
+@attribute [Authorize]
+@rendermode InteractiveServer
 
-<h3>Contacts Index</h3>
+<PageTitle>ContactMe | Contacts</PageTitle>
+
+<div class="d-flex align-items-center mt-3">
+    <h1>All Contacts</h1>
+    <a href="contacts/create" class="ms-auto btn btn-primary rounded-pill">New Contact</a>
+</div>
 
 @code {
 

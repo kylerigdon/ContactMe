@@ -2,23 +2,100 @@
 {
     <div class="accordion-item">
         <div class="accordion-header">
-            <div class="d-md-flex gap-3 p-3">
-                <div class="flex-grow-1 hstack gap-2 align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
-                    <span class="badge bg-secondary rounded-pill small">
-                        @Category.Contacts.Count
-                    </span>
-                    <span>
-                        @Category.Name
-                    </span>
+            @if (status == Status.Viewing)
+            {
+                <div class="d-md-flex gap-3 p-3">
+                    <div class="flex-grow-1 hstack gap-2 align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                        <span class="badge bg-secondary rounded-pill small">
+                            @Category.Contacts.Count
+                        </span>
+                        <span>
+                            @Category.Name
+                        </span>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <span class="text-nowrap">
+                            <a role="button" class="me-1" @onclick="() => status = Status.Editing">
+                                <i class="bi bi-pencil-fill" aria-label="Edit Category"></i>
+                            </a>
+                            <a role="button" class="me-1" @onclick="() => status = Status.Deleting">
+                                <i class="bi bi-trash-fill text-danger" aria-label="Delete Category"></i>
+                            </a>
+                            @* TODO: take me to the contacts index filtered by this category *@
+                            <a href="contacts" class="me-1">
+                                <i class="bi bi-eye-fill" aria-label="View Category"></i>
+                            </a>
+                            @*TODO: email the whole category*@
+                            <a href="#" class="me-1">
+                                <i class="bi bi-envelope-fill" aria-label="Email Category"></i>
+                            </a>
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    @* buttons *@
+            }
+            else if(status == Status.Deleting)
+            {
+                <div class="d-md-flex gap-3 p-3">
+                    <div class="flex-grow-1 hstack gap-2 align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                        <span class="badge bg-secondary rounded-pill small">
+                            @Category.Contacts.Count
+                        </span>
+                        <span>
+                            @Category.Name
+                        </span>
+                    </div>
+                    <div class="mt-2 mt-md-0 text-danger small">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Are you sure you want to delete this category?
+                        <span class="text-nowrap p-1">
+                            <button class="btn btn-sm btn-danger" @onclick="DeleteCategory">
+                                <i class="bi bi-trash"></i>
+                                Delete
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => status = Status.Viewing">
+                                <i class="bi bi-x"></i>
+                                Cancel
+                            </button>
+                        </span>
+                    </div>
                 </div>
-            </div>
+            }
+            else if(status == Status.Editing)
+            {
+                <EditForm Model="Category" class="d-md-flex gap-3 p-3 align-items-center" OnValidSubmit="UpdateCategory">
+                    <DataAnnotationsValidator />
+                    <div class="flex-grow-1 hstack gap-2 align-items-center" role="button">
+                        <span class="badge bg-secondary rounded-pill small" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                            @Category.Contacts.Count
+                        </span>
+                        <div class="vstack gap-2">
+                            <InputText @bind-Value="Category.Name" class="form-control" />
+                            <ValidationMessage For="() => Category.Name" />
+                        </div>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <span class="text-nowrap">
+                           <button type="submit" class="btn btn-primary btn-sm me-1">
+                               <i class="bi bi-floppy"></i>
+                               Save Changes
+                           </button>
+                           <button type="button" class="btn btn-danger btn-sm" @onclick="CancelEdit">
+                               <i class="bi bi-x"></i>
+                               Cancel
+                           </button>
+                        </span>
+                    </div>
+                </EditForm>
+            }
         </div>
         <div id="collapse-@Category.Id" class="accordion-collapse collapse" data-bs-parent="#@AccordionId">
             <div class="accordion-body">
-                <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                <ul class="list-group">
+                    @* TODO: display the contacts here *@
+                    <li class="list-group-item text-center lead text-secondary">
+                        No contacts in this category
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -31,11 +108,57 @@
 
     [Parameter, EditorRequired]
     public CategoryDTO? Category { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<CategoryDTO> OnUpdate { get; set; }
     #endregion
 
     #region state
+    private enum Status
+    {
+        Viewing,
+        Editing,
+        Deleting
+    }
+
+    private Status status = Status.Viewing;
+    private string? originalName;
     #endregion
 
     #region methods
+    protected override void OnParametersSet()
+    {
+        if (Category is not null)
+        {
+            originalName = Category.Name;
+        }
+    }
+
+    private void CancelEdit()
+    {
+        if (!string.IsNullOrEmpty(originalName))
+        {
+            Category!.Name = originalName;
+        }
+
+        status = Status.Viewing;
+    }
+
+    private async Task DeleteCategory()
+    {
+        await OnDelete.InvokeAsync(Category!.Id);
+
+        status = Status.Viewing;
+    }
+
+    private async Task UpdateCategory()
+    {
+        await OnUpdate.InvokeAsync(Category);
+
+        status = Status.Viewing;
+    }
     #endregion
 }

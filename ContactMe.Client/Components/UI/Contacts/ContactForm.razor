@@ -1,0 +1,136 @@
+﻿@using ContactMe.Client.Helpers
+@using ContactMe.Client.Models.Enums
+
+@if (Contact is not null)
+{
+    <EditForm Model="Contact">
+        <DataAnnotationsValidator />
+
+        <div class="row p-2 g-3">
+            <div class="col-12 col-md-4">
+                <div class="square-img-container">
+                    <img src="@(string.IsNullOrEmpty(Contact.ImageUrl) ? ImageHelper.DefaultContactImage : Contact.ImageUrl)" 
+                         class="square-img" />
+                </div>
+                <div>
+                    <InputFile class="form-control mt-2" accept=".png,.jpg,.jpeg,.svg" />
+                    <span class="text-danger">@*TODO: errors with images go here*@</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="row g-2">
+                    <div class="col-12 col-md-6">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <InputText @bind-Value="Contact.FirstName" 
+                                   id="firstName" 
+                                   placeholder="First Name" 
+                                   aria-label="First Name"
+                                   class="form-control" />
+                         <ValidationMessage For="() => Contact.FirstName" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <InputText @bind-Value="Contact.LastName" 
+                                    id="lastName" 
+                                    placeholder="Last Name" 
+                                    aria-label="Last Name"
+                                    class="form-control" />
+                        <ValidationMessage For="() => Contact.LastName" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <InputText @bind-Value="Contact.Email" 
+                                    id="email" 
+                                    placeholder="Email" 
+                                    aria-label="Email" 
+                                    class="form-control" />
+                        <ValidationMessage For="() => Contact.Email" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="phoneNumber" class="form-label">Phone</label>
+                        <InputText @bind-Value="Contact.PhoneNumber" 
+                                   id="phoneNumber" 
+                                   placeholder="(000) 000-0000" 
+                                   aria-label="Phone Number"
+                                   class="form-control" />
+                        <ValidationMessage For="() => Contact.PhoneNumber" />
+                    </div>
+                    <div class="col-12">
+                        <label for="mainAddress" class="form-label">Address</label>
+                        <InputText @bind-Value="Contact.Address1" 
+                                   id="mainAddress" 
+                                   placeholder="1234 Main St" 
+                                   aria-label="Phone Number"
+                               class="form-control" name="mainAddress" required />
+                        <ValidationMessage For="() => Contact.Address1" />
+                    </div>
+                    <div class="col-12">
+                        <label for="addressTwo" class="form-label">Address 2</label>
+                        <InputText @bind-Value="Contact.Address2" 
+                                   id="addressTwo" 
+                                   placeholder="Apartment, studio, or floor"
+                                   aria-label="Address 2" 
+                                   class="form-control"  />
+                        <ValidationMessage For="() => Contact.Address2" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="city" class="form-label">City</label>
+                        <InputText @bind-Value="Contact.City" 
+                                    id="city" 
+                                    placeholder="City" 
+                                    aria-label="City" 
+                                    class="form-control"/>
+                        <ValidationMessage For="() => Contact.City" />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="state" class="form-label">
+                            State
+                        </label>
+                        <InputSelect @bind-Value="Contact.State" class="form-select">
+                            <option value="">Select a State...</option>
+                            @foreach(State state in Enum.GetValues<State>())
+                            {
+                                <option value="@state">
+                                    @state.ToString()
+                                </option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => Contact.State" />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <label for="zipCode" class="form-label">Zip</label>
+                        <InputNumber @bind-Value="Contact.ZipCode" 
+                                    class="form-control" 
+                                    aria-label="Zip Code"
+                                    placeholder="Zip" />
+                        <ValidationMessage For="() => Contact.ZipCode" />
+                    </div>
+                    <div class="col-12">
+                       
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-lg btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    #region parameters
+    [Parameter, EditorRequired]
+    public ContactDTO? Contact { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<ContactDTO> OnSubmit { get; set; }
+    #endregion
+
+    #region state
+    #endregion
+
+    #region methods
+    #endregion
+}
