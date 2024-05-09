@@ -1,5 +1,6 @@
 ﻿using ContactMe.Client.Helpers;
 using ContactMe.Models;
+using System.Text.RegularExpressions;
 
 namespace ContactMe.Helpers
 {
@@ -29,6 +30,31 @@ namespace ContactMe.Helpers
             };
 
             return upload;
+        }
+
+        public static ImageUpload GetImageUpload(string dataUrl)
+        {
+            GroupCollection matchGroups = Regex.Match(dataUrl, @"data:(?<type>.+?);base64,(?<data>.+)").Groups;
+
+            if (matchGroups.ContainsKey("type") && matchGroups.ContainsKey("data"))
+            {
+                string contentType = matchGroups["type"].Value;
+                byte[] data = Convert.FromBase64String(matchGroups["data"].Value);
+
+                if (data.Length <= MaxFileSize)
+                {
+                    ImageUpload upload = new ImageUpload()
+                    {
+                        Id = Guid.NewGuid(),
+                        Data = data,
+                        Type = contentType
+                    };
+
+                    return upload;
+                }
+            }
+
+            throw new IOException("Data URL was either invalid or too large");
         }
     }
 }

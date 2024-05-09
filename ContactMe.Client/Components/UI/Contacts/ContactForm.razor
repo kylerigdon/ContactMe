@@ -1,9 +1,11 @@
 ﻿@using ContactMe.Client.Helpers
 @using ContactMe.Client.Models.Enums
+@using ContactMe.Client.Services.Interfaces
+@inject ICategoryDTOService CategoryService
 
 @if (Contact is not null)
 {
-    <EditForm Model="Contact">
+    <EditForm Model="Contact" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
 
         <div class="row p-2 g-3">
@@ -13,7 +15,7 @@
                          class="square-img" />
                 </div>
                 <div>
-                    <InputFile class="form-control mt-2" accept=".png,.jpg,.jpeg,.svg" />
+                    <InputFile OnChange="OnFileChange" class="form-control mt-2" accept=".png,.jpg,.jpeg,.svg" />
                     <span class="text-danger">@*TODO: errors with images go here*@</span>
                 </div>
             </div>
@@ -31,19 +33,19 @@
                     <div class="col-12 col-md-6">
                         <label for="lastName" class="form-label">Last Name</label>
                         <InputText @bind-Value="Contact.LastName" 
-                                    id="lastName" 
-                                    placeholder="Last Name" 
-                                    aria-label="Last Name"
-                                    class="form-control" />
+                                   id="lastName" 
+                                   placeholder="Last Name" 
+                                   aria-label="Last Name"
+                                   class="form-control" />
                         <ValidationMessage For="() => Contact.LastName" />
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <InputText @bind-Value="Contact.Email" 
-                                    id="email" 
-                                    placeholder="Email" 
-                                    aria-label="Email" 
-                                    class="form-control" />
+                                   id="email" 
+                                   placeholder="Email" 
+                                   aria-label="Email" 
+                                   class="form-control" />
                         <ValidationMessage For="() => Contact.Email" />
                     </div>
                     <div class="col-12 col-md-6">
@@ -61,7 +63,7 @@
                                    id="mainAddress" 
                                    placeholder="1234 Main St" 
                                    aria-label="Phone Number"
-                               class="form-control" name="mainAddress" required />
+                                   class="form-control" />
                         <ValidationMessage For="() => Contact.Address1" />
                     </div>
                     <div class="col-12">
@@ -76,10 +78,10 @@
                     <div class="col-12 col-md-6">
                         <label for="city" class="form-label">City</label>
                         <InputText @bind-Value="Contact.City" 
-                                    id="city" 
-                                    placeholder="City" 
-                                    aria-label="City" 
-                                    class="form-control"/>
+                                   id="city" 
+                                   placeholder="City" 
+                                   aria-label="City" 
+                                   class="form-control"/>
                         <ValidationMessage For="() => Contact.City" />
                     </div>
                     <div class="col-12 col-md-4">
@@ -100,16 +102,36 @@
                     <div class="col-12 col-md-2">
                         <label for="zipCode" class="form-label">Zip</label>
                         <InputNumber @bind-Value="Contact.ZipCode" 
-                                    class="form-control" 
-                                    aria-label="Zip Code"
-                                    placeholder="Zip" />
+                                     class="form-control" 
+                                     aria-label="Zip Code"
+                                     placeholder="Zip" />
                         <ValidationMessage For="() => Contact.ZipCode" />
                     </div>
-                    <div class="col-12">
-                       
+                    <div class="col-12 col-md-6">
+                        <label for="categories" class="form-label">
+                            Categories
+                        </label>
+                        <InputSelect id="categories" class="form-control" @bind-Value="selectedCategoryIds">
+                            @foreach(CategoryDTO category in categories)
+                            {
+                                <option value="@category.Id">
+                                    @category.Name
+                                </option>
+                            }
+                        </InputSelect>
                     </div>
-                    <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-lg btn-primary">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="birthDate">
+                            Birthday
+                        </label>
+                        <InputDate id="birthDate" @bind-Value="Contact.BirthDate" class="form-control" />
+                        <ValidationMessage For="() => Contact.BirthDate" />
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2">
+                        <a href="contacts" class="btn btn-lg btn-outline-secondary rounded-pill">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-lg btn-primary rounded-pill">
                             Save
                         </button>
                     </div>
@@ -126,11 +148,79 @@
 
     [Parameter, EditorRequired]
     public EventCallback<ContactDTO> OnSubmit { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
     #endregion
 
     #region state
+    private int[] selectedCategoryIds = [];
+    private IEnumerable<CategoryDTO> categories = [];
+    private UserInfo? userInfo;
+    string errorMessage = string.Empty;
+    private string? imageError;
     #endregion
 
     #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            // get the categories from the service
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+            errorMessage = string.Empty;
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Could not load your categories.";
+        }
+    }
+
+    public async Task HandleSubmit()
+    {
+        // map selectedCategoryIds to Contact.Categories
+        foreach(int id in selectedCategoryIds)
+        {
+            foreach(CategoryDTO category in categories)
+            {
+                if(category.Id == id)
+                {
+                    Contact!.Categories.Add(category);
+                }
+            }
+        }
+
+        await OnSubmit.InvokeAsync(Contact);
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        imageError = null;
+
+        if (changeEvent.File is null)
+        {
+            Contact!.ImageUrl = ImageHelper.DefaultContactImage;
+        }
+        else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5MB";
+        }
+        else
+        {
+            try
+            {
+                Contact!.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+
+    }
     #endregion
 }

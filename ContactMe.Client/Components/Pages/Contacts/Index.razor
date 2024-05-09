@@ -1,14 +1,58 @@
 ﻿@page "/contacts"
+
+@using ContactMe.Client.Helpers
+@using ContactMe.Client.Services.Interfaces
+
 @attribute [Authorize]
 @rendermode InteractiveServer
+
+@inject IContactDTOService ContactService
 
 <PageTitle>ContactMe | Contacts</PageTitle>
 
 <div class="d-flex align-items-center mt-3">
     <h1>All Contacts</h1>
     <a href="contacts/create" class="ms-auto btn btn-primary rounded-pill">New Contact</a>
+
+    <ul>
+        @foreach(ContactDTO contact in contacts)
+        {
+            <li>
+                <img height="30" src="@contact.ImageUrl" />
+                @contact.FullName
+            </li>
+        }
+    </ul>
 </div>
 
 @code {
+    #region parameters
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
 
+    #region state
+    private IEnumerable<ContactDTO> contacts = [];
+    string errorMessage = string.Empty;
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // get the userId from the auth state
+            UserInfo? userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            // get the list of contacts from the DB
+            contacts = await ContactService.GetContactsAsync(userInfo!.UserId);
+
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Could not load your contacts. Please try again later.";
+        }
+    }
+    #endregion
 }
