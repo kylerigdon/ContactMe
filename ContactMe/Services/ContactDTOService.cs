@@ -110,5 +110,10 @@ namespace ContactMe.Services
             }
 
         }
+
+        public async Task DeleteContactAsync(int contactId, string userId)
+        {
+            await repository.DeleteContactAsync(contactId, userId);
+        }
     }
 }

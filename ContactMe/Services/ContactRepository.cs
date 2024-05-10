@@ -106,5 +106,18 @@ namespace ContactMe.Services
                 }
             }
         }
+
+        public async Task DeleteContactAsync(int contactId, string userId)
+        {
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            Contact? existingContact = await context.Contacts.FirstOrDefaultAsync(c => c.Id == contactId && c.AppUserId == userId);
+
+            if (existingContact is not null)
+            {
+                context.Contacts.Remove(existingContact);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

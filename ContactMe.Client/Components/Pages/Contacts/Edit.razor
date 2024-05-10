@@ -10,9 +10,12 @@
 
 <PageTitle>ContactMe | @(string.IsNullOrEmpty(contact?.FullName) ? "Edit Contact" : contact.FullName)</PageTitle>
 
-<div class="p-3 my-5 border border-2 shadow-lg bg-light">
-    <ContactForm Contact="contact" OnSubmit="HandleSubmit" />
-</div>
+@if (contact is not null)
+{
+    <div class="p-3 my-5 border border-2 shadow-lg bg-light">
+        <ContactForm Contact="contact" OnSubmit="HandleSubmit" />
+    </div>
+}
 
 @code {
     #region parameters

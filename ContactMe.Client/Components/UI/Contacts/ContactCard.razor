@@ -38,7 +38,7 @@
                     else
                     {
                         <div class="text-danger">Are you sure you want to delete this contact?</div>
-                        <button class="btn btn-sm btn-danger me-2">Delete</button>
+                        <button class="btn btn-sm btn-danger me-2" @onclick="DeleteContact">Delete</button>
                         <button class="btn btn-sm btn-secondary" @onclick="() => IsDeleting = false">Cancel</button>
                     }
 
@@ -63,7 +63,7 @@
     [Parameter, EditorRequired]
     public ContactDTO? Contact { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public EventCallback<int> OnDelete { get; set; }
     #endregion
 
@@ -72,7 +72,7 @@
     #endregion
 
     #region methods
-    private async Task DeleteContac()
+    private async Task DeleteContact()
     {
         await OnDelete.InvokeAsync(Contact!.Id);
         IsDeleting = false;

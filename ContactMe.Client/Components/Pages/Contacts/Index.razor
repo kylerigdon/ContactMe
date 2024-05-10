@@ -41,7 +41,7 @@
                 @foreach (ContactDTO contact in contacts)
                 {
                     <div class="col" @key="contact.Id">
-                        <ContactCard Contact="contact" />
+                        <ContactCard Contact="contact" OnDelete="DeleteContactAsync" />
                     </div>
                 }
             }
@@ -66,6 +66,7 @@
 
     #region state
     private IEnumerable<ContactDTO> contacts = [];
+    private UserInfo? userInfo;
     string errorMessage = string.Empty;
     #endregion
 
@@ -75,7 +76,7 @@
         try
         {
             // get the userId from the auth state
-            UserInfo? userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
             // get the list of contacts from the DB
             contacts = await ContactService.GetContactsAsync(userInfo!.UserId);
 
@@ -85,6 +86,22 @@
         {
             Console.WriteLine(ex);
             errorMessage = "Could not load your contacts. Please try again later.";
+        }
+    }
+
+    private async Task DeleteContactAsync(int contactId)
+    {
+        try
+        {
+            await ContactService.DeleteContactAsync(contactId, userInfo!.UserId);
+            contacts = await ContactService.GetContactsAsync(userInfo!.UserId);
+
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            errorMessage = "Failed to delete the selected contact.";
         }
     }
     #endregion

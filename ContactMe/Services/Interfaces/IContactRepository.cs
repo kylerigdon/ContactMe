@@ -16,5 +16,7 @@ namespace ContactMe.Services.Interfaces
         Task<Contact?> GetContactByIdAsync(int contactId, string userId);
 
         Task UpdateContactAsync(Contact contact);
+
+        Task DeleteContactAsync(int contactId, string userId);
     }
 }
