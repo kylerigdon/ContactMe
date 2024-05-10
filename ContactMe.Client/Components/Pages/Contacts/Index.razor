@@ -14,15 +14,42 @@
     <h1>All Contacts</h1>
     <a href="contacts/create" class="ms-auto btn btn-primary rounded-pill">New Contact</a>
 
-    <ul>
-        @foreach(ContactDTO contact in contacts)
-        {
-            <li>
-                <img height="30" src="@contact.ImageUrl" />
-                @contact.FullName
-            </li>
-        }
-    </ul>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-4">
+        <div class="sideNav mb-3">
+            <form>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" />
+                    <button class="btn btn-primary">Search</button>
+                </div>
+            </form>
+            <div class="mt-5">
+                <label class="form-label">Category Filter</label>
+                <select class="form-select">
+                    <option value="">All Contacts</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-8">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1 g-3">
+            @if(contacts.Any())
+            {
+                <ContactCard 
+            }
+            else 
+            {
+                <div class="text-center sideNav">
+                    <h4>No contacts found!</h4>
+                    <p>
+                        Why don't you <a href="contacts/create">create some</a>?
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 @code {

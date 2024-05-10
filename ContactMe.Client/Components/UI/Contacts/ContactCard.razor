@@ -1,0 +1,59 @@
+﻿<div class="card h-100">
+    <div class="row g-0">
+        <div class="col-md-4 square-img-container rounded-start overflow-hidden">
+            @* contact image here *@
+            <img src=“@(string.IsNullOrEmpty(Contact.ImageUrl) ? ImageHelper.DefaultContactImage : Contact.ImageUrl)” class="square-img" />
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@* contact first and last name *@</h5>
+                <address class="card-text">
+                    @*
+                    Contact address 1, address 2, city, state, and zip
+                    *@
+                </address>
+                <div class="card-text">
+                    <span class="fw-bold me-2">Phone:</span>@* phone number *@
+                </div>
+                <div class="card-text text-truncate">
+                    <span class="fw-bold me-2">Email:</span>@* email address *@
+                </div>
+
+                <div class="fs-4">
+                    <a class="me-3 editIcons" href=“@* link to edit contact *@“><i class="bi bi-pencil-fill "></i></a>
+                    <a class="me-3 editIcons" href=“#”><i class="bi bi-envelope-fill "></i></a>
+                    <a class="me-3 editIcons" role="button" @* show “are you sure?” *@>
+                        <i class="bi bi-trash-fill text-danger "></i>
+                    </a>
+                </div>
+
+                <div class="hstack gap-2 flex-wrap">
+                    @* show actual contact categories here *@
+                    <a href=“#” class="text-decoration-none badge rounded-pill border border-1 text-dark fw-normal">
+                        Category one
+                    </a>
+                    <a href=“#” class="text-decoration-none badge rounded-pill border border-1 text-dark fw-normal">
+                        Category two
+                    </a>
+                    <a href=“#” class="text-decoration-none badge rounded-pill border border-1 text-dark fw-normal">
+                        Category three
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    #region parameters
+    [Parameter, EditorRequired]
+
+    #endregion
+
+    #region state
+    #endregion
+
+    #region methods
+    #endregion
+}

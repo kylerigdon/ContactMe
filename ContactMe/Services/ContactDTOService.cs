@@ -34,12 +34,26 @@ namespace ContactMe.Services
 
             // sent it to the repository
             Contact createdContact = await repository.CreateContactAsync(newContact);
-            
+
             IEnumerable<int> categoryIds = contactDTO.Categories.Select(c => c.Id);
             await repository.AddCategoriesToContactAsync(createdContact.Id, userId, categoryIds);
 
             // return the created DTO
             return createdContact.ToDTO();
+        }
+
+        public async Task<ContactDTO?> GetContactByIdAsync(int contactId, string userId)
+        {
+            Contact? contact = await repository.GetContactByIdAsync(contactId, userId);
+
+            if (contact == null)
+            {
+                return null;
+            }
+            else
+            {
+                return contact.ToDTO();
+            }
         }
 
         public async Task<IEnumerable<ContactDTO>> GetContactsAsync(string userId)
@@ -48,12 +62,45 @@ namespace ContactMe.Services
 
             List<ContactDTO> contactsDTO = new List<ContactDTO>();
 
-            foreach(Contact contact in contacts)
+            foreach (Contact contact in contacts)
             {
                 contactsDTO.Add(contact.ToDTO());
             }
 
             return contactsDTO;
+        }
+
+        public async Task UpdateContactAsync(ContactDTO contactDTO, string userId)
+        {
+            Contact? contact = await repository.GetContactByIdAsync(contactDTO.Id, userId);
+
+            if (contact is not null)
+            {
+                contact.FirstName = contactDTO.FirstName;
+                contact.LastName = contactDTO.LastName;
+                contact.BirthDate = contactDTO.BirthDate;
+                contact.Address1 = contactDTO.Address1;
+                contact.Address2 = contactDTO.Address2;
+                contact.City = contactDTO.City;
+                contact.State = contactDTO.State;
+                contact.ZipCode = contactDTO.ZipCode;
+                contact.Email = contactDTO.Email;
+                contact.PhoneNumber = contactDTO.PhoneNumber;
+
+                if (contactDTO.ImageUrl.StartsWith("data:"))
+                {
+                    contact.Image = UploadHelper.GetImageUpload(contactDTO.ImageUrl);
+                }
+                else
+                {
+                    contact.Image = null;
+                }
+
+                // TODO: categories???
+
+                await repository.UpdateContactAsync(contact);
+            }
+
         }
     }
 }

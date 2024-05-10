@@ -1,0 +1,71 @@
+﻿@page "/contacts/edit/{id:int}"
+@using ContactMe.Client.Helpers
+@using ContactMe.Client.Services.Interfaces
+@using ContactMe.Client.Components.UI.Contacts
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject IContactDTOService ContactService
+@inject NavigationManager Nav
+
+<PageTitle>ContactMe | @(string.IsNullOrEmpty(contact?.FullName) ? "Edit Contact" : contact.FullName)</PageTitle>
+
+<div class="p-3 my-5 border border-2 shadow-lg bg-light">
+    <ContactForm Contact="contact" OnSubmit="HandleSubmit" />
+</div>
+
+@code {
+    #region parameters
+    [Parameter]
+    public int Id { get; set; }
+
+    private ContactDTO? contact { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+    #region state
+    private UserInfo? userInfo;
+    string errorMessage = string.Empty;
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            contact = await ContactService.GetContactByIdAsync(Id, userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        if (contact is null)
+        {
+            Nav.NavigateTo("/contacts");
+        }
+    }
+
+    private async Task HandleSubmit(ContactDTO contact)
+    {
+        try
+        {
+            await ContactService.UpdateContactAsync(contact, userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex);
+            errorMessage = "An error occurred while trying to update this contact.";
+        }
+
+        if (errorMessage == string.Empty)
+        {
+            Nav.NavigateTo("/contacts");
+        }
+    }
+    #endregion
+}
