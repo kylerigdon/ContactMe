@@ -1,5 +1,6 @@
 ﻿@page "/contacts"
 
+@using ContactMe.Client.Components.UI.Contacts
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
@@ -35,11 +36,16 @@
     </div>
     <div class="col-12 col-lg-8">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1 g-3">
-            @if(contacts.Any())
+            @if (contacts.Any())
             {
-                <ContactCard 
+                @foreach (ContactDTO contact in contacts)
+                {
+                    <div class="col" @key="contact.Id">
+                        <ContactCard Contact="contact" />
+                    </div>
+                }
             }
-            else 
+            else
             {
                 <div class="text-center sideNav">
                     <h4>No contacts found!</h4>

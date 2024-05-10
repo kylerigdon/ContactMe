@@ -16,7 +16,7 @@
                 </div>
                 <div>
                     <InputFile OnChange="OnFileChange" class="form-control mt-2" accept=".png,.jpg,.jpeg,.svg" />
-                    <span class="text-danger">@*TODO: errors with images go here*@</span>
+                    <span class="text-danger">@imageError</span>
                 </div>
             </div>
             <div class="col-12 col-md-8">
@@ -171,6 +171,7 @@
             categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
             errorMessage = string.Empty;
 
+            selectedCategoryIds = [.. Contact!.Categories.Select(c => c.Id)]; // the [.. ] is the same as adding .ToArray() at the end and works with all collections
         }
         catch (Exception ex)
         {
@@ -181,6 +182,8 @@
 
     public async Task HandleSubmit()
     {
+        Contact.Categories.Clear();
+
         // map selectedCategoryIds to Contact.Categories
         foreach(int id in selectedCategoryIds)
         {

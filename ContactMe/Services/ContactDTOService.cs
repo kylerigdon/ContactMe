@@ -96,9 +96,17 @@ namespace ContactMe.Services
                     contact.Image = null;
                 }
 
-                // TODO: categories???
+                // dont let the database update categories yet
+                contact.Categories.Clear();
 
                 await repository.UpdateContactAsync(contact);
+
+                // remove all the old categories
+                await repository.RemoveCategoriesFromContactAsync(contact.Id, userId);
+
+                // add back whatever the user selected
+                IEnumerable<int> selectedCategoryIds = contactDTO.Categories.Select(c => c.Id);
+                await repository.AddCategoriesToContactAsync(contact.Id, userId, selectedCategoryIds);
             }
 
         }
