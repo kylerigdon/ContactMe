@@ -34,6 +34,18 @@
     width: 40%;
 }
 
+.btn-primary-light {
+    background-color: var(--kr-theme-100);
+}
+
+.btn-primary-light:hover {
+    background-color: var(--kr-theme-200);
+}
+
+.btn-primary-light:focus {
+    background-color: var(--kr-theme-200);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     height: 100%;
