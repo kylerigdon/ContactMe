@@ -12,9 +12,9 @@
                     <h5 class="card-title">@Contact.FullName</h5>
                     <address class="card-text">
                         @Contact.Address1 <br />
-                        @if(!string.IsNullOrEmpty(Contact.Address2))
+                        @if (!string.IsNullOrEmpty(Contact.Address2))
                         {
-                        @Contact.Address2 <br />
+                            @Contact.Address2 <br />
                         }
                         @Contact.City, @Contact.State, @Contact.ZipCode
                     </address>
@@ -25,14 +25,14 @@
                         <span class="fw-bold me-2">Email:</span> @Contact.Email
                     </div>
 
-                    @if(IsDeleting == false)
+                    @if (IsDeleting == false)
                     {
-                    <div class="fs-4">
-                        <a class="me-3 editIcons" href="/contacts/edit/@Contact.Id"><i class="bi bi-pencil-fill "></i></a>
-                        <a class="me-3 editIcons" href="#"><i class="bi bi-envelope-fill "></i></a>
-                        <a class="me-3 editIcons" role="button" @onclick="() => IsDeleting = true" >
-                            <i class="bi bi-trash-fill text-danger "></i>
-                        </a>
+                        <div class="fs-4">
+                            <a class="me-3 editIcons" href="/contacts/edit/@Contact.Id"><i class="bi bi-pencil-fill "></i></a>
+                            <a class="me-3 editIcons" href="#"><i class="bi bi-envelope-fill "></i></a>
+                            <a class="me-3 editIcons" role="button" @onclick="() => IsDeleting = true">
+                                <i class="bi bi-trash-fill text-danger "></i>
+                            </a>
                         </div>
                     }
                     else
@@ -45,10 +45,9 @@
                     <div class="hstack gap-2 flex-wrap mt-2">
                         @foreach (CategoryDTO category in Contact.Categories)
                         {
-                            <a href=“#” class="text-decoration-none badge rounded-pill border border-1 text-dark fw-normal">
+                            <a href="contacts?categoryId=@category.Id" class="text-decoration-none badge rounded-pill border border-1 text-dark fw-normal">
                                 @category.Name
                             </a>
-
                         }
                     </div>
                 </div>

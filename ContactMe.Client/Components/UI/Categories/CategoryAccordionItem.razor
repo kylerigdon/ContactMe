@@ -22,7 +22,7 @@
                                 <i class="bi bi-trash-fill text-danger" aria-label="Delete Category"></i>
                             </a>
                             @* TODO: take me to the contacts index filtered by this category *@
-                            <a href="contacts" class="me-1">
+                            <a href="contacts?categoryId=@Category.Id" class="me-1">
                                 <i class="bi bi-eye-fill" aria-label="View Category"></i>
                             </a>
                             @*TODO: email the whole category*@
@@ -92,9 +92,15 @@
             <div class="accordion-body">
                 <ul class="list-group">
                     @* TODO: display the contacts here *@
-                    <li class="list-group-item text-center lead text-secondary">
-                        No contacts in this category
+                    @foreach(ContactDTO Contact in Category.Contacts)
+                    {
+                        <li class="list-group-item text-center lead text-secondary d-flex justify-content-start">
+                        <a href="contacts/edit/@Contact.Id" style="text-decoration:none" class="text-dark">
+                                <img src="@Contact.ImageUrl" class="circle-img" />
+                            @Contact.FullName
+                        </a>
                     </li>
+                    }
                 </ul>
             </div>
         </div>

@@ -19,6 +19,21 @@
     object-position: top;
 }
 
+.circle-img {
+    height: 2rem;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+}
+
+.card-header {
+    background-color: var(--kr-theme-100);
+}
+
+.seperator {
+    display: inline-block;
+    width: 40%;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     height: 100%;

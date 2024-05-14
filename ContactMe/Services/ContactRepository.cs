@@ -119,5 +119,36 @@ namespace ContactMe.Services
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<Contact>> GetContactsByCategoryIdAsync(int categoryId, string userId)
+        {
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            List<Contact> contacts = new List<Contact>();
+
+            contacts = await context.Contacts.Include(c => c.Categories)
+                                             .Where(c => c.AppUserId == userId && c.Categories.Any(cat => cat.Id == categoryId))
+                                             .ToListAsync();
+
+            return contacts;
+        }
+
+        public async Task<IEnumerable<Contact>> SearchContactsAsync(string searchTerm, string userId)
+        {
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            string normalizedSearch = searchTerm.Trim().ToLower();
+
+            List<Contact> contacts = await context.Contacts.Where(c => c.AppUserId == userId) // only include YOUR contacts
+                                                           .Include(c => c.Categories) // make sure we bring the categories with us
+                                                           .Where(c => string.IsNullOrEmpty(normalizedSearch)
+                                                                       || c.FirstName!.ToLower().Contains(normalizedSearch)
+                                                                       || c.LastName!.ToLower().Contains(normalizedSearch)
+                                                                       || c.Categories.Any(cat => cat.Name!.ToLower().Contains(normalizedSearch))
+                                                            )
+                                                           .ToListAsync();
+            
+            return contacts;
+        }
     }
 }
