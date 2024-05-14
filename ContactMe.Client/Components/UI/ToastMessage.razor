@@ -1,0 +1,55 @@
+﻿@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="toast text-@Color-emphasis bg-@Color-subtle border-@Color @(jsFailed ? "show" : "")" role="alert" aria-live="assertive" aria-atomic="true" @ref="toast">
+        <div class="d-flex">
+            <div class="toast-body flex-grow-1">
+                @Message
+            </div>
+            <button type="button" class="btn-close m-2 mb-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public string? Color { get; set; } = "success";
+
+    private ElementReference? toast; // the div we'll be passing into our JS function
+    private IJSObjectReference? toastJS; // the imported JS file
+    private bool jsFailed = false; // allow us to show the toast div if the JS fails
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // get the isolated JS file for this component
+                toastJS = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/UI/ToastMessage.razor.js");
+
+                // call the exported function to initialize and show the toast
+                await toastJS.InvokeVoidAsync("initToast", toast);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                jsFailed = true;
+                // nothing else to do - this Toast just won't hide itself automatically
+            }
+        }
+    }
+
+    // if you import a JS file, you should dispose of it
+    public async ValueTask DisposeAsync()
+    {
+        if (toastJS is not null)
+        {
+            await toastJS.DisposeAsync();
+        }
+    }
+}

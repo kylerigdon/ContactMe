@@ -6,6 +6,7 @@ using ContactMe.Services;
 using ContactMe.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,7 +42,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+// For Sending Emails using the app
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, SendGridService>();
+builder.Services.AddSingleton<IEmailSender, SendGridService>();
 
 // Adding services and Interfaces
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

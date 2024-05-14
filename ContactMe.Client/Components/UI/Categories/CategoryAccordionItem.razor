@@ -26,14 +26,14 @@
                                 <i class="bi bi-eye-fill" aria-label="View Category"></i>
                             </a>
                             @*TODO: email the whole category*@
-                            <a href="#" class="me-1">
+                            <a href="categories/email/@Category.Id" class="me-1">
                                 <i class="bi bi-envelope-fill" aria-label="Email Category"></i>
                             </a>
                         </span>
                     </div>
                 </div>
             }
-            else if(status == Status.Deleting)
+            else if (status == Status.Deleting)
             {
                 <div class="d-md-flex gap-3 p-3">
                     <div class="flex-grow-1 hstack gap-2 align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             }
-            else if(status == Status.Editing)
+            else if (status == Status.Editing)
             {
                 <EditForm Model="Category" class="d-md-flex gap-3 p-3 align-items-center" OnValidSubmit="UpdateCategory">
                     <DataAnnotationsValidator />
@@ -75,14 +75,14 @@
                     </div>
                     <div class="mt-2 mt-md-0">
                         <span class="text-nowrap">
-                           <button type="submit" class="btn btn-primary btn-sm me-1">
-                               <i class="bi bi-floppy"></i>
-                               Save Changes
-                           </button>
-                           <button type="button" class="btn btn-danger btn-sm" @onclick="CancelEdit">
-                               <i class="bi bi-x"></i>
-                               Cancel
-                           </button>
+                            <button type="submit" class="btn btn-primary btn-sm me-1">
+                                <i class="bi bi-floppy"></i>
+                                Save Changes
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" @onclick="CancelEdit">
+                                <i class="bi bi-x"></i>
+                                Cancel
+                            </button>
                         </span>
                     </div>
                 </EditForm>
@@ -92,14 +92,23 @@
             <div class="accordion-body">
                 <ul class="list-group">
                     @* TODO: display the contacts here *@
-                    @foreach(ContactDTO Contact in Category.Contacts)
+                    @if (Category.Contacts.Count is 0)
                     {
-                        <li class="list-group-item text-center lead text-secondary d-flex justify-content-start">
-                        <a href="contacts/edit/@Contact.Id" style="text-decoration:none" class="text-dark">
-                                <img src="@Contact.ImageUrl" class="circle-img" />
-                            @Contact.FullName
-                        </a>
-                    </li>
+                        <li class="list-group-item text-center lead text-secondary">
+                            No contacts in this category
+                        </li>
+                    }
+                    else
+                    {
+                        @foreach (ContactDTO Contact in Category.Contacts)
+                        {
+                            <li class="list-group-item text-center text-secondary d-flex justify-content-start">
+                                <a href="contacts/edit/@Contact.Id" style="text-decoration:none" class="text-dark">
+                                    <img src="@Contact.ImageUrl" class="circle-img" />
+                                    @Contact.FullName
+                                </a>
+                            </li>
+                        }
                     }
                 </ul>
             </div>

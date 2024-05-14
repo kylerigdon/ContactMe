@@ -1,0 +1,92 @@
+﻿@page "/categories/email/{categoryId:int}"
+@rendermode InteractiveServer
+@using ContactMe.Client.Helpers
+@using ContactMe.Client.Services.Interfaces
+
+@attribute [Authorize]
+
+@inject ICategoryDTOService CategoryService
+@inject NavigationManager Nav
+
+
+<PageTitle>ContactMe | Email Category</PageTitle>
+
+<div class="card shadow-lg my-3">
+    <div class="card-body">
+        @if (emailData is not null)
+        {
+            <EmailForm EmailData="emailData" OnSubmit="HandleSubmit"/>
+        }
+    </div>
+</div>
+
+@code {
+    #region parameters
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+    #endregion
+
+    #region state
+    private EmailData? emailData;
+    private CategoryDTO? category;
+    private UserInfo? userInfo;
+    #endregion
+
+    #region methods
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // get the user ID
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            // get the category
+            category = await CategoryService.GetCategoryByIdAsync(CategoryId, userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        // set emailData to have the category's contacts' emails
+        if (category is null)
+        {
+            Nav.NavigateTo("categories");
+        }
+        else
+        {
+            IEnumerable<string> emails = category.Contacts.Select(c => c.Email!);
+            string recipients = string.Join("; ", emails);
+
+            emailData = new EmailData()
+                {
+                    Recipients = recipients,
+                    Subject = $"Group Message for {category.Name}"
+                };
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        string message = $"Something went wrong sending your email to the {category?.Name} category. Please try again later.";
+        // send the email
+        try
+        {
+            bool success = await CategoryService.EmailCategoryAsync(CategoryId, emailData!, userInfo!.UserId);
+
+            if (success)
+            {
+                message = $"Email successfully sent to your {category?.Name} category!";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        Nav.NavigateTo($"contacts?message={message}");
+    }
+    #endregion
+}

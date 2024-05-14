@@ -16,5 +16,7 @@ namespace ContactMe.Client.Services.Interfaces
         
         // Delete
         Task UpdateCategoryAsync(CategoryDTO category, string userId);
+
+        Task<bool> EmailCategoryAsync(int categoryId, EmailData emailData, string userId);
     }
 }

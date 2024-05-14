@@ -14,7 +14,7 @@
 <PageTitle>ContactMe | Contacts</PageTitle>
 
 <div class="d-flex align-items-center mt-3">
-    @if (!string.IsNullOrWhiteSpace(SearchTerm)) 
+    @if (!string.IsNullOrWhiteSpace(SearchTerm))
     {
         <h1>Search results for "@SearchTerm"</h1>
     }
@@ -49,6 +49,10 @@
                 </InputSelect>
             </div>
         </div>
+        @if (!string.IsNullOrEmpty(toastMessage))
+        {
+            <ToastMessage @key="messageId" Message="@toastMessage" Color="@messageColor" />
+        }
     </div>
     <div class="col-12 col-lg-8">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1 g-3">
@@ -84,6 +88,9 @@
 
     [SupplyParameterFromQuery]
     public string? SearchTerm { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Message { get; set; }
     #endregion
 
     #region state
@@ -94,21 +101,38 @@
     private string? searchInput;
 
     string errorMessage = string.Empty;
+
+    private string? toastMessage;
+    private string? messageColor;
+    private Guid messageId = Guid.NewGuid();
     #endregion
 
     #region methods
     protected override async Task OnInitializedAsync()
     {
-        // get the userId from the auth state
-        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-        categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+        try
+        {
+            // get the userId from the auth state
+            userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
 
     protected override async Task OnParametersSetAsync()
     {
         try
         {
-            if(!string.IsNullOrWhiteSpace(SearchTerm))
+            if(!string.IsNullOrEmpty(Message))
+            {
+                ShowToastMessage(Message);
+            }
+
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
             {
                 searchInput = SearchTerm;
                 CategoryId = null;
@@ -162,6 +186,8 @@
             { nameof(SearchTerm), null }
         };
 
+        ShowToastMessage("category was changed");
+
         string url = Nav.GetUriWithQueryParameter(nameof(CategoryId), CategoryId);
         Nav.NavigateTo(url);
     }
@@ -176,6 +202,23 @@
 
         string url = Nav.GetUriWithQueryParameters(queryParameters);
         Nav.NavigateTo(url);
+    }
+
+    private void ShowToastMessage(string message)
+    {
+        toastMessage = message;
+
+        if(message.ToLower().Contains("wrong") || message.ToLower().Contains("error"))
+        {
+            messageColor = "danger";
+        }
+        else
+        {
+            messageColor = "success";
+        }
+
+        // this will reset the toast component
+        messageId = Guid.NewGuid();
     }
     #endregion
 }

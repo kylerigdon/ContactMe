@@ -11,5 +11,7 @@ namespace ContactMe.Client.Services.Interfaces
         Task<IEnumerable<ContactDTO>> SearchContactsAsync(string searchTerm, string userId);
         Task UpdateContactAsync(ContactDTO contact, string userId);
         Task DeleteContactAsync(int contactId, string userId);
+
+        Task<bool> EmailContactAsync(int contactId, EmailData emailData, string userId);
     }
 }

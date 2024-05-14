@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactMe", "ContactMe\ContactMe.csproj", "{D7127D22-5971-414F-8D02-34D6EF4924A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactMe", "ContactMe\ContactMe.csproj", "{D7127D22-5971-414F-8D02-34D6EF4924A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactMe.Client", "ContactMe.Client\ContactMe.Client.csproj", "{9EB725AB-A089-4682-9875-BECF6D5BBB0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactMe.Client", "ContactMe.Client\ContactMe.Client.csproj", "{9EB725AB-A089-4682-9875-BECF6D5BBB0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

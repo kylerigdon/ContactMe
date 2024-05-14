@@ -3,10 +3,11 @@ using ContactMe.Client.Services.Interfaces;
 using ContactMe.Helpers;
 using ContactMe.Models;
 using ContactMe.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace ContactMe.Services
 {
-    public class ContactDTOService(IContactRepository repository) : IContactDTOService
+    public class ContactDTOService(IContactRepository repository, IEmailSender emailSender) : IContactDTOService
     {
         public async Task<ContactDTO> CreateContactAsync(ContactDTO contactDTO, string userId)
         {
@@ -128,6 +129,29 @@ namespace ContactMe.Services
             IEnumerable<Contact> contacts = await repository.SearchContactsAsync(searchTerm, userId);
 
             return contacts.Select(c => c.ToDTO());
+        }
+
+        public async Task<bool> EmailContactAsync(int contactId, EmailData emailData, string userId)
+        {
+            try
+            {
+                Contact? contact = await repository.GetContactByIdAsync(contactId, userId);
+
+                if (contact is null)
+                {
+                    return false;
+                }
+
+                await emailSender.SendEmailAsync(emailData.Recipients!, emailData.Subject!, emailData.Message!);
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
         }
     }
 }

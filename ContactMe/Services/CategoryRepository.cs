@@ -34,6 +34,7 @@ namespace ContactMe.Services
             using ApplicationDbContext context = contextFactory.CreateDbContext();
 
             Category? category = await context.Categories
+                                              .Include(c => c.Contacts)
                                               .FirstOrDefaultAsync(c => c.Id == categoryId && c.AppUserId == userId);
 
             return category;
