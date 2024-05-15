@@ -183,12 +183,11 @@
         Dictionary<string, object?> queryParameters = new Dictionary<string, object?>()
         {
             { nameof(CategoryId), CategoryId },
-            { nameof(SearchTerm), null }
+            { nameof(SearchTerm), null },
+            { nameof(Message), null },
         };
 
-        ShowToastMessage("category was changed");
-
-        string url = Nav.GetUriWithQueryParameter(nameof(CategoryId), CategoryId);
+        string url = Nav.GetUriWithQueryParameters(queryParameters);
         Nav.NavigateTo(url);
     }
 
@@ -197,7 +196,8 @@
         Dictionary<string, object?> queryParameters = new Dictionary<string, object?>()
         {
             { nameof(CategoryId), null },
-            { nameof(SearchTerm), searchInput }
+            { nameof(SearchTerm), searchInput },
+            { nameof(Message), null },
         };
 
         string url = Nav.GetUriWithQueryParameters(queryParameters);
