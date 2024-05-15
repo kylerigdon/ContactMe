@@ -11,13 +11,11 @@
   <ItemGroup>
     <None Remove="Components\Pages\Contacts\Index.razor.css" />
     <None Remove="Components\UI\Contacts\ContactCard.razor.css" />
-    <None Remove="Components\UI\ToastMessage.razor.js" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Components\Pages\Contacts\Index.razor.css" />
     <Content Include="Components\UI\Contacts\ContactCard.razor.css" />
-    <Content Include="Components\UI\ToastMessage.razor.js" />
   </ItemGroup>
 
   <ItemGroup>

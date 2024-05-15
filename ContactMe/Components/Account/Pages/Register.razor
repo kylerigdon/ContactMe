@@ -17,6 +17,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject ApplicationDbContext DBContext
+@inject IConfiguration Config
 
 <PageTitle>Register</PageTitle>
 
@@ -73,13 +74,16 @@
 
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
 
+                </EditForm>
                     <div class="d-flex align-items-center justify-content-center">
                         <hr class="seperator me-3" /> or <hr class="seperator ms-3" />
                     </div>
                     <div class="text-center">
-                        <a href="#" class="btn btn-md btn-outline-primary">Log in as a demo user</a>
+                    <form class="text-center" method="post" @formname="demoLogin" @onsubmit="LoginDemoUser">
+                        <AntiforgeryToken />
+                        <button class="btn btn-md btn-outline-primary">Log in as a demo user</button>
+                    </form>
                     </div>
-                </EditForm>
             </div>
         </div>
     </div>
@@ -88,6 +92,7 @@
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
+    private string? errorMessage;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -96,6 +101,29 @@
     private string? ReturnUrl { get; set; }
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+    }
+
+    public async Task LoginDemoUser()
+    {
+        string? demoEmail = Config["DemoUserLogin"];
+
+        if (!string.IsNullOrEmpty(demoEmail))
+        {
+            ApplicationUser? demoUser = await SignInManager.UserManager.FindByEmailAsync(demoEmail);
+
+            if (demoUser is not null)
+            {
+                await SignInManager.SignInAsync(demoUser, false);
+                RedirectManager.RedirectTo(ReturnUrl);
+            }
+        }
+
+        errorMessage = "Error: Demo user login is not available.";
+    }
 
     public async Task RegisterUser(EditContext editContext)
     {

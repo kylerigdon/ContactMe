@@ -1,4 +1,6 @@
 using ContactMe.Client;
+using ContactMe.Client.Services;
+using ContactMe.Client.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -11,5 +13,8 @@ builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticat
 // add HttpClient as a service
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+
+builder.Services.AddScoped<ICategoryDTOService, WASMCategoryDTOService>();
+builder.Services.AddScoped<IContactDTOService, WASMContactDTOService>();
 
 await builder.Build().RunAsync();

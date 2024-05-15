@@ -9,6 +9,7 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IConfiguration Config
 
 <PageTitle>Log in</PageTitle>
 
@@ -46,11 +47,15 @@
                     <div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                     </div>
+                </EditForm>
                     <div class="d-flex align-items-center justify-content-center">
                         <hr class="seperator me-3" /> or <hr class="seperator ms-3" />
                     </div>
                     <div class="text-center">
-                        <a href="#" class="btn btn-md btn-outline-primary">Log in as a demo user</a>
+                    <form class="text-center" method="post" @formname="demoLogin" @onsubmit="LoginDemoUser">
+                        <AntiforgeryToken />
+                        <button class="btn btn-md btn-outline-primary">Log in as a demo user</button>
+                    </form>
                     </div>
                     <hr />
                     <div class="row g-2">
@@ -71,7 +76,7 @@
                             <a class="btn btn-primary-light w-100" href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register</a>
                         </div>
                     </div>
-                </EditForm>
+               
             </section>
         </div>
     </div>
@@ -92,6 +97,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Input ??= new();
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -124,6 +130,24 @@
         {
             errorMessage = "Error: Invalid login attempt.";
         }
+    }
+
+    public async Task LoginDemoUser()
+    {
+        string? demoEmail = Config["DemoUserLogin"];
+
+        if (!string.IsNullOrEmpty(demoEmail))
+        {
+            ApplicationUser? demoUser = await SignInManager.UserManager.FindByEmailAsync(demoEmail);
+
+            if (demoUser is not null)
+            {
+                await SignInManager.SignInAsync(demoUser, false);
+                RedirectManager.RedirectTo(ReturnUrl);
+            }
+        }
+
+        errorMessage = "Error: Demo user login is not available.";
     }
 
     private sealed class InputModel
