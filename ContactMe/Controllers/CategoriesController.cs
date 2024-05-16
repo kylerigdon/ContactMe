@@ -120,7 +120,7 @@ namespace ContactMe.Controllers
         }
 
         // POST: "api/categories/5/email" -> sends an email to category and returns Ok or BadRequest to indicate success or failure
-        [HttpPost("{id:int}")]
+        [HttpPost("{id:int}/email")]
         public async Task<ActionResult> EmailCategory([FromRoute] int id, EmailData emailData)
         {
             try
