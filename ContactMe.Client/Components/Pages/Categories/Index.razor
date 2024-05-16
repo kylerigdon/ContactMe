@@ -3,7 +3,7 @@
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 @attribute [Authorize]
 @inject ICategoryDTOService CategoryService
 
@@ -59,7 +59,6 @@
             formCategory = new CategoryDTO();
 
             categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
-
         }
         catch (Exception ex)
         {

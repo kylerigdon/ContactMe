@@ -29,6 +29,10 @@
     background-color: var(--kr-theme-100);
 }
 
+.devicons {
+    font-size: 3.5rem;
+}
+
 .seperator {
     display: inline-block;
     width: 40%;

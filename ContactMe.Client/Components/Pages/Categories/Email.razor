@@ -1,9 +1,9 @@
 ﻿@page "/categories/email/{categoryId:int}"
-@rendermode InteractiveWebAssembly
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
 @attribute [Authorize]
+@rendermode InteractiveAuto
 
 @inject ICategoryDTOService CategoryService
 @inject NavigationManager Nav

@@ -49,6 +49,8 @@ namespace ContactMe.Services
             if (categoryToUpdate is not null)
             {
                 categoryToUpdate.Name = category.Name;
+
+                categoryToUpdate.Contacts.Clear();
                 await repository.UpdateCategoryAsync(categoryToUpdate, userId);
             }
         }

@@ -1,9 +1,10 @@
 ﻿@page "/contacts/email/{contactId:int}"
-@rendermode InteractiveAuto
+
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
 @attribute [Authorize]
+@rendermode InteractiveAuto
 
 @inject IContactDTOService ContactService
 @inject NavigationManager Nav
