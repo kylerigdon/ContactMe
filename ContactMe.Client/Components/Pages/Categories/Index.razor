@@ -3,7 +3,7 @@
 @using ContactMe.Client.Helpers
 @using ContactMe.Client.Services.Interfaces
 
-@rendermode InteractiveAuto
+@rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inject ICategoryDTOService CategoryService
 
@@ -64,7 +64,6 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            throw;
         }
     }
 
@@ -81,7 +80,6 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            throw;
         }
     }
 
@@ -95,7 +93,6 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            throw;
         }
     }
 

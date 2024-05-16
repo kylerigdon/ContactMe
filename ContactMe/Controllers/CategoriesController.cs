@@ -81,18 +81,18 @@ namespace ContactMe.Controllers
         }
 
         // PUT: "api/categories/5" -> updates the selected category and returns Ok
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdateCategory([FromRoute] int id, [FromBody] CategoryDTO updateCategory)
+        [HttpPut("{Id:int}")]
+        public async Task<ActionResult> UpdateCategory([FromRoute] int Id, [FromBody] CategoryDTO category)
         {
             try
             {
-                if(id != updateCategory.Id)
+                if(Id != category.Id)
                 {
                     return BadRequest();
                 }
                 else
                 {
-                    await _categoryDTOService.UpdateCategoryAsync(updateCategory, _userId);
+                    await _categoryDTOService.UpdateCategoryAsync(category, _userId);
                     return Ok();
                 }
             }
