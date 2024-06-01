@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>aspnet-ContactMe-8d70e96c-ad08-494f-b685-d80c7e9bd986</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,12 +16,13 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None  Include="Data\DemoImages\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="Data\DemoImages\**\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

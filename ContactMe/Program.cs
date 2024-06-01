@@ -31,11 +31,18 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 var connectionString = DataUtility.GetConnectionString(builder.Configuration)
-    ?? throw new InvalidOperationException("Connection string not found.");
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+ options.UseNpgsql(
+     connectionString,
+     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+     ));
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
